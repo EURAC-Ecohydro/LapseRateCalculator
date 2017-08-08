@@ -1,0 +1,38 @@
+---
+title: "LapseRateCalculator"
+output: github_document
+---
+
+# Title: "LapseRateCalculator"
+
+## Introduction
+
+The R script LapseRateCalculator.R in folder *inst* provide an example of usage of lapse rate calculator using as test variable Dew point temperature (Tdew). Tdew is calculated from Air Temperature and Relative Humidity using GEOtop formulas(1) [[Link]](https://github.com/geotopmodel/geotop/blob/master/src/geotop/meteo.cc).
+
+
+After a selection of variable to examine the script apply a linear model to extract lapse rate. The output is a file csv containing,for each timestamp, the time series of number of station available , the lapse rate and the r-squared of linear fitting model.
+
+Note: Thi script work for data having column structure and format as LTER standard, not for GEOtop (possible update!)
+
+## Description
+
+1. In **Section 1** import select the folder (**INPUT 1**) of project and import in R the functions used in this script and a file of elevation of stations. This file, called elevation.csv must be filled manually in folder *data/Support files*
+
+
+2. In **Section 2** the script calculate dew point temperature from Air temperature and Relative Humidity. In this section you have to fill the following inputs:
+    +   **INPUT 2**: Select which VARIABLE in your data measure Air Temperature
+    +   **INPUT 3**: Select which VARIABLE in your data measure Relative Humidity
+    
+    
+3. In **Section 3** the lapse rate is calculated using a linear fitting models. You shuould select (**INPUT 4**) which data use for lapse rate calculator (in the example Dew_point, but it could be another, for example only Air Temperature imported with function *fun_read_all_stations*. This function read all files in folder data/Input/ and read the variable select from every file). Linear fit are between Temperature (y axis) and Elevation (x axis)
+
+
+4. In **Section 4** the script save output in folder *data/Output/*, as a file called variable_name.csv, containing 3 time series:
+    + *n_station*: the number of station available in linear fit for each timestamp
+    + *lapes_rate*: the lapse rate obtained as slope of fitting line
+    + *r_squared*: the r_squared extract from infomation of linare fit
+
+
+
+## References
+(1) https://github.com/geotopmodel/geotop/blob/master/src/geotop/meteo.cc

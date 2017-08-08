@@ -1,0 +1,23 @@
+---
+title: "LapseRateCalculator"
+output: github_document
+---
+# Title: "Readme"
+
+## Introduction
+
+The R package LapseRateCalculator is an example of lapse rate calculator applied to dew point temperature (derived from T_Air and RH). The algorithm **example_transect_dew_point.R** in folder **inst** applies function **Tdew** in folder **R** to produce dew point temperature for each station. All station in folder *data/Input* are analyzed togheder and the lapse rate is calculated for each hour using a linear fit model. 
+
+## How to start
+
+Clone the package from https://github.com/EURAC-Ecohydro/LapseRateCalculator
+
+## How to use
+
+In folder **inst** there is the script example_transect_dew_point.R 
+
+In folder **R** there are some functions used by scripts in inst folder
+
+In folder **data** there are subfolders where put input data, support files, climareport, and a folder where scripts save outputs
+
+[Package Documentetion: Vignette](https://github.com/EURAC-Ecohydro/LapseRateCalculator/blob/master/LapseRateCalculator.Rmd)
