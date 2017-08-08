@@ -18,7 +18,7 @@ require(zoo)
 # --------- INPUT 1 --------- 
 
 #- To set folder of cloned package -----------------------------------------------------------------------------------------------------------------
-FOLDER="C://Users/CBrida/Desktop/Git/Upload/LapseRateCalculator/"
+FOLDER="C:\\Users\\GBertoldi\\Documents\\Git\\EURAC-Ecohydro\\LapseRateCalculator/"
 
 # --------------------------- 
 
