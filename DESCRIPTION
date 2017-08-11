@@ -4,7 +4,7 @@ Version: 1.0
 Authors@R: person("Brida", "Christian", email = "bridachristian@gmail.com", role = c("aut", "cre"))
 Description: The package calculate the lapse rate of dew poin temperature applied at some stations in folder data.
 	The script in folder inst reads a selected variable from all station in folder data/Input, it calculates the lapse rate of dew point temperature calculated using air temperature, relative humidity and elevation of station. 
-Depends: R (>= 3.4.1)
+Depends: R 
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true

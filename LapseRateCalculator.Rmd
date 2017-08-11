@@ -16,23 +16,43 @@ Note: Thi script work for data having column structure and format as LTER standa
 
 ## Description
 
-1. In **Section 1** import select the folder (**INPUT 1**) of project and import in R the functions used in this script and a file of elevation of stations. This file, called elevation.csv must be filled manually in folder *data/Support files*
+1. In **Section 1** import functions used in script, files available in folder */data/Input* after the selection of git folder (**INPUT 1**), and the file of elevation (**INPUT 2**) of stations in folder */data/Support files*. This file has 2 columns: the first, called **name** should cointain the file name of station **without .csv**. The second, called **elevation** should cointain the elevation of the station in m a.s.l. 
 
 
 2. In **Section 2** the script calculate dew point temperature from Air temperature and Relative Humidity. In this section you have to fill the following inputs:
-    +   **INPUT 2**: Select which VARIABLE in your data measure Air Temperature
-    +   **INPUT 3**: Select which VARIABLE in your data measure Relative Humidity
+    +   **INPUT 3**: Select which VARIABLE in your data measure Air Temperature
+    +   **INPUT 4**: Select which VARIABLE in your data measure Relative Humidity
     
     
-3. In **Section 3** the lapse rate is calculated using a linear fitting models. You shuould select (**INPUT 4**) which data use for lapse rate calculator (in the example Dew_point, but it could be another, for example only Air Temperature imported with function *fun_read_all_stations*. This function read all files in folder data/Input/ and read the variable select from every file). Linear fit are between Temperature (y axis) and Elevation (x axis)
+3. In **Section 3** the lapse rate is calculated using a linear fitting models.For example the linear fit is between Dew point Temperature (y axis) and Elevation (x axis). You shuould select (**INPUT 5**) which dataset use for lapse rate calculator (in the example Dew_point, but it could be another, for example only Air Temperature imported with function *fun_read_all_stations*. This function read all files in folder data/Input/ and read the variable select from every file), and an elevation vector (**INPUT 6**) that cointain the only the elevation of station in the same order that they appear in the dataset.
 
 
-4. In **Section 4** the script save output in folder *data/Output/*, as a file called variable_name.csv, containing 3 time series:
-    + *n_station*: the number of station available in linear fit for each timestamp
-    + *lapes_rate*: the lapse rate obtained as slope of fitting line
-    + *r_squared*: the r_squared extract from infomation of linare fit
+4. In **Section 4** the script save output in folder */data/Output/*, as a file VARIABLE_FOR_LAPSERATE.csv (where VARIABLE_FOR_LAPSERATE is the string of name of variable analyzed with lapse rate calculator), containing 4 column:
+    + **TIMESTAMP**: date and time of observation
+    + **n_station**: the number of station available in linear fit for each timestamp
+    + **lapes_rate**: the lapse rate obtained as slope of fitting line
+    + **r_squared**: the r_squared extract from infomation of linare fit
 
+## Dataset
 
+**INPUT**:
+
+1.  **git_folder**: source of package **LapseRateCalculator**
+2.  **ELEVATION_PATH**: path of elevation file 
+3.  **FILES**: vector of names of files available in */data/Input data*. **(don't edit this path)**. Option: You can also subset this vector excluding some stations
+4.  **VARIABLE_1**: variable 1 to import for dew point temperature. In the exmaple "T_Air" 
+5.  **VARIABLE_2**: variable 2 to import for dew point temperature. In the exmaple "RH" 
+6.  **DATA_FOR_LAPSERATE**: data.frame containing the same variable for all stations in vector FILES (You can alse create a subset of station to process excluding some elements from FILES. *See in the script FILES_NEW*)
+7.  **ELEVATION_VECTOR**: vector of elevations of station. In the example we assign to this vector an extraction of elevation file. 
+8.  **VARIABLE_FOR_LAPSERATE**: string containing the name of variable which the laspe rate is applied. We use this string to define the name of output file.
+
+**OUTPUT**:
+
+1.  **VARIABLE_FOR_LAPSERATE.csv** in folder */data/Output/* a .csv file which contains 4 columns:
+    + **TIMESTAMP**: date and time of observation
+    + **n_station**: the number of station available in linear fit for each timestamp
+    + **lapes_rate**: the lapse rate obtained as slope of fitting line
+    + **r_squared**: the r_squared extract from infomation of linare fit
 
 ## References
 (1) https://github.com/geotopmodel/geotop/blob/master/src/geotop/meteo.cc

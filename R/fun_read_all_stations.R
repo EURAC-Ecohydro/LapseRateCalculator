@@ -19,7 +19,7 @@ NULL
 fun_read_all_stations=function(FOLDER,FILES,VARIABLE){
   # loop1: import file meteo0001.txt
   i=FILES[1]
-  data=read.table(paste(FOLDER,"data/Input/",i,sep = ""),sep = ",",stringsAsFactors = F,header = T)
+  data=read.table(paste(FOLDER,"/data/Input/",i,sep = ""),sep = ",",stringsAsFactors = F,header = T)
   
   data=data[c(which(colnames(data)=="TIMESTAMP"),which(colnames(data)==VARIABLE))]
   variable_df=data
@@ -28,7 +28,7 @@ fun_read_all_stations=function(FOLDER,FILES,VARIABLE){
    # other loops: import other files and merge with data in loop1
   new_FILES=FILES[-1]
   for(i in new_FILES){
-    data=read.table(paste(FOLDER,"data/Input/",i,sep = ""),sep = ",",stringsAsFactors = F,header = T)
+    data=read.table(paste(FOLDER,"/data/Input/",i,sep = ""),sep = ",",stringsAsFactors = F,header = T)
     if(nrow(data)==nrow(variable_df)){
       data=data[c(which(colnames(data)=="TIMESTAMP"),which(colnames(data)==VARIABLE))]
       variable_df=cbind(variable_df,data[,2])

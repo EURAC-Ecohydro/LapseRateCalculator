@@ -7,31 +7,40 @@
 # Version:      1.0
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Settings
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-require(zoo)
+if(!require("zoo")){
+  install.packages(zoo)
+  require("zoo")
+}
 
 # ~~~~~~~~~~ Section 1 ~~~~~~~~~~ 
 
-# --------- INPUT 1 --------- 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import informations and functions
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#- To set folder of cloned package -----------------------------------------------------------------------------------------------------------------
-FOLDER="C://Users/CBrida/Desktop/Git/Upload/LapseRateCalculator/"
+# ========= INPUT 1-3 ========= 
 
-# --------------------------- 
+git_folder = getwd()
+# git_folder="C://Users/CBrida/Desktop/Git/Upload/LapseRateCalculator/"
 
-#- To extract meteo files -----------------------------------------------------------------------------------------------------------------------------
-FILES = dir(paste(FOLDER,"data/Input/",sep = ""))
+ELEVATION_PATH=paste(git_folder,"/data/Support files/elevation.csv",sep="")
 
-#- To import external functions -------------------------------------------------------------------------------------------------------------
-source(paste(FOLDER,"R/fun_read_all_stations.R",sep=""))
-source(paste(FOLDER,"R/fun_dew_point.R",sep=""))
+FILES = dir(paste(git_folder,"/data/Input/",sep = "")) 
+# FILES = FILES[-2] # <- YOU CAN ALSO APPLY DEW POINT AND LAPSE RATE TO EVERY FILES EXCLUDING THE SECOND, OR OTHER!
+
+# ============================= 
+
+#- To import external functions --------------------------------------------------------------------------------------------------------------------------
+
+source(paste(git_folder,"/R/fun_read_all_stations.R",sep=""))
+source(paste(git_folder,"/R/fun_dew_point.R",sep=""))
+source(paste(git_folder,"/R/fun_lapse_rate.R",sep=""))
 
 #- To Import elevation of stations. Remind to fill file elevation.csv ------------------------------------------------------------------------------------
-elevation_df=read.csv(paste(FOLDER,"data/Support files/elevation.csv",sep=""),stringsAsFactors = F)
-warning(paste("Have you properly filled the file ",FOLDER,"data/Support files/elevation.csv ? If YES, don't worry, if NO check and fill it!",sep = ""))
+
+elevation_df=read.csv(ELEVATION_PATH,stringsAsFactors = F)
+warning(paste("Have you properly filled the file ",git_folder,"/data/Support files/elevation.csv ? If YES, don't worry, if NO check and fill it!",sep = ""))
 
 # ~~~~~~~~~~ Section 2 ~~~~~~~~~~ 
 
@@ -39,26 +48,21 @@ warning(paste("Have you properly filled the file ",FOLDER,"data/Support files/el
 # Dew Point Calculator
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Select and import variables needed for dew point (To calculate only lapse rate you need only one variable)
+# ========= INPUT 4-5 ========= 
 
-# --------- INPUT 2 --------- 
+VARIABLE_1="T_Air"
+
+VARIABLE_2="RH"
+
+# ============================= 
 
 #- Read data and extract variable AirT (Air Temperature) ----------------------------------------------------------------------------------------------
-VARIABLE="T_Air"
 
-# --------------------------- 
-
-Air_T=fun_read_all_stations(VARIABLE = VARIABLE,FILES = FILES ,FOLDER = FOLDER)
-
-# --------- INPUT 3 --------- 
+Air_T=fun_read_all_stations(VARIABLE = VARIABLE_1,FILES = FILES ,FOLDER = git_folder)
 
 #- Read data and extract variable RelHum (Relative Humidity) ------------------------------------------------------------------------------------------
-VARIABLE="RH"
 
-# --------------------------- 
-
-Rel_Hum=fun_read_all_stations(VARIABLE = VARIABLE,FILES = FILES ,FOLDER = FOLDER)
-
+Rel_Hum=fun_read_all_stations(VARIABLE = VARIABLE,FILES = FILES ,FOLDER = git_folder)
 
 #- Dew Point calculator -------------------------------------------------------------------------------------------------------------------------------
 Dew_point_temperature=Tdew(TEMP = Air_T[,-1],RH = Rel_Hum[,-1],Z = elevation_df$elevation) # import should be without dates! (E.g. Air_T[,-1], ...)
@@ -72,33 +76,27 @@ colnames(Dew_point)[1]="TIMESTAMP"
 # Lapse Rate Calculator
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# --------- INPUT 4 --------- 
+# ========= INPUT 6-7 ========= 
 
-DATA_FOR_LAPSERATE = Dew_point                    # <-- SELECT HERE THE DATASET TO USE FOR LAPSE RATE (with dates!)
-VARIABLE_FOR_LAPSERATE = "Dew_point"              # <-- SELECT HERE THE NAME OF VARIABLE USED (e.g. Dew_point or T_Air or ...) (Usually copy under " " DATA_FOR_LAPSERATE )
+DATA_FOR_LAPSERATE = Dew_point                    # <-- SELECT HERE THE data.frame TO APPLY LAPSE RATE (with TIMESTAMP!)
 
-# --------------------------- 
+ELEVATION_VECTOR = elevation_df$elevation         # <-- SELECT HERE THE vector of ELEVATIONS OF STATIONS (Lenght of ELEVATION_VECTOR should be 
+                                                  # the same of the number of stations in DATA_FOR_LAPSERATE)
+# ============================= 
 
-# number of station available for each time step
-n_station=apply(DATA_FOR_LAPSERATE,1,function(x) sum(!is.na(x))-1)
+#- Lapserate calculator -------------------------------------------------------------------------------------------------------------------------------
 
-# applies the linear fitting function lm() to the data
-# lapse rate as linear fit slope coefficient between variable (y axis) and elevation (x axis). 
-# Result is deg C for 1000 m
-lr=apply(DATA_FOR_LAPSERATE,1, function(x) 1000*lm(x[-1]~elevation_df$elevation)$coefficients[2]) # lm(y~x)    y = x[,-1] ~~> value of dew point temperature; x = elevations of stations 
-
-# linear fit r squared 
-r2=apply(DATA_FOR_LAPSERATE,1, function(x) summary(lm(x[-1]~elevation_df$elevation))$r.squared)
-
-OUTPUT_COMPLETE=data.frame(DATA_FOR_LAPSERATE[,1],n_station,lr,r2)
-colnames(OUTPUT_COMPLETE)=c("TIMESTAMP","n_stations", "lapse_rate", "r_squared")
-
-LAPSE_RATE=OUTPUT_COMPLETE[,c(1,3)]
-colnames(LAPSE_RATE)[2]=paste(VARIABLE_FOR_LAPSERATE,"_lapse_rate",sep = "")                # <-- SELECT HERE THE NAME OF VARIABLE USED (e.g. T_dew_point or T_Air or ...)
+output_complete = fun_lapse_rate(DATA_FOR_LAPSERATE = Dew_point,ELEVATION_VECTOR = elevation_df$elevation )
 
 # ~~~~~~~~~~ Section 4 ~~~~~~~~~~ 
 
 #- Export lapse rate as VARIABLE_FOR_LAPSERATE.csv ------------------------------------------------------------------------------------
 
-write.csv(OUTPUT_COMPLETE,paste(FOLDER,"data/Output/",VARIABLE_FOR_LAPSERATE,".csv",sep = ""),quote = F,row.names = F,na = "NA")
+# ========= INPUT 8 ========= 
+
+VARIABLE_FOR_LAPSERATE = "Dew_point"              # <-- SELECT HERE THE NAME OF VARIABLE USED (e.g. Dew_point or T_Air or ...) (Usually copy under " " DATA_FOR_LAPSERATE )
+
+# =========================== 
+
+write.csv(OUTPUT_COMPLETE,paste(git_folder,"/data/Output/",VARIABLE_FOR_LAPSERATE,".csv",sep = ""),quote = F,row.names = F,na = "NA")
 
