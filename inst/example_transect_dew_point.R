@@ -29,18 +29,15 @@ ELEVATION_PATH=paste(git_folder,"/data/Support files/elevation.csv",sep="")
 FILES = dir(paste(git_folder,"/data/Input/",sep = "")) 
 # FILES = FILES[-2] # <- YOU CAN ALSO APPLY DEW POINT AND LAPSE RATE TO EVERY FILES EXCLUDING THE SECOND, OR OTHER!
 
-# ============================= 
-
-#- To set folder of cloned package -----------------------------------------------------------------------------------------------------------------
-FOLDER="C:\\Users\\GBertoldi\\Documents\\Git\\EURAC-Ecohydro\\LapseRateCalculator/"
 
 # ============================= 
 
 #- To import external functions --------------------------------------------------------------------------------------------------------------------------
+# not needed if the package is installed
 
-source(paste(git_folder,"/R/fun_read_all_stations.R",sep=""))
-source(paste(git_folder,"/R/fun_dew_point.R",sep=""))
-source(paste(git_folder,"/R/fun_lapse_rate.R",sep=""))
+#source(paste(git_folder,"/R/fun_read_all_stations.R",sep=""))
+#source(paste(git_folder,"/R/fun_dew_point.R",sep=""))
+#source(paste(git_folder,"/R/fun_lapse_rate.R",sep=""))
 
 #- To Import elevation of stations. Remind to fill file elevation.csv ------------------------------------------------------------------------------------
 
@@ -67,7 +64,7 @@ Air_T=fun_read_all_stations(VARIABLE = VARIABLE_1,FILES = FILES ,FOLDER = git_fo
 
 #- Read data and extract variable RelHum (Relative Humidity) ------------------------------------------------------------------------------------------
 
-Rel_Hum=fun_read_all_stations(VARIABLE = VARIABLE,FILES = FILES ,FOLDER = git_folder)
+Rel_Hum=fun_read_all_stations(VARIABLE = VARIABLE_2,FILES = FILES ,FOLDER = git_folder)
 
 #- Dew Point calculator -------------------------------------------------------------------------------------------------------------------------------
 Dew_point_temperature=Tdew(TEMP = Air_T[,-1],RH = Rel_Hum[,-1],Z = elevation_df$elevation) # import should be without dates! (E.g. Air_T[,-1], ...)
@@ -84,6 +81,7 @@ colnames(Dew_point)[1]="TIMESTAMP"
 # ========= INPUT 6-7 ========= 
 
 DATA_FOR_LAPSERATE = Dew_point                    # <-- SELECT HERE THE data.frame TO APPLY LAPSE RATE (with TIMESTAMP!)
+#DATA_FOR_LAPSERATE = Air_T 
 
 ELEVATION_VECTOR = elevation_df$elevation         # <-- SELECT HERE THE vector of ELEVATIONS OF STATIONS (Lenght of ELEVATION_VECTOR should be 
                                                   # the same of the number of stations in DATA_FOR_LAPSERATE)
@@ -91,7 +89,7 @@ ELEVATION_VECTOR = elevation_df$elevation         # <-- SELECT HERE THE vector o
 
 #- Lapserate calculator -------------------------------------------------------------------------------------------------------------------------------
 
-output_complete = fun_lapse_rate(DATA_FOR_LAPSERATE = Dew_point,ELEVATION_VECTOR = elevation_df$elevation )
+output_complete = fun_lapse_rate(DATA_FOR_LAPSERATE = DATA_FOR_LAPSERATE,ELEVATION_VECTOR = ELEVATION_VECTOR )
 
 # ~~~~~~~~~~ Section 4 ~~~~~~~~~~ 
 
@@ -99,9 +97,12 @@ output_complete = fun_lapse_rate(DATA_FOR_LAPSERATE = Dew_point,ELEVATION_VECTOR
 
 # ========= INPUT 8 ========= 
 
+# outptuts are in K / 1000 m - negative values mean a decrease with elevation
+
 VARIABLE_FOR_LAPSERATE = "Dew_point"              # <-- SELECT HERE THE NAME OF VARIABLE USED (e.g. Dew_point or T_Air or ...) (Usually copy under " " DATA_FOR_LAPSERATE )
+#VARIABLE_FOR_LAPSERATE = "Air_T" 
 
 # =========================== 
 
-write.csv(OUTPUT_COMPLETE,paste(git_folder,"/data/Output/",VARIABLE_FOR_LAPSERATE,".csv",sep = ""),quote = F,row.names = F,na = "NA")
+write.csv(output_complete,paste(git_folder,"/data/Output/",VARIABLE_FOR_LAPSERATE,".csv",sep = ""),quote = F,row.names = F,na = "NA")
 
