@@ -26,8 +26,13 @@ git_folder = getwd()
 
 ELEVATION_PATH=paste(git_folder,"/data/Support files/elevation.csv",sep="")
 
+<<<<<<< HEAD
 FILES = dir(paste(git_folder,"/data/Input/",sep = "")) 
 # FILES = FILES[-2] # <- YOU CAN ALSO APPLY DEW POINT AND LAPSE RATE TO EVERY FILES EXCLUDING THE SECOND, OR OTHER!
+=======
+#- To set folder of cloned package -----------------------------------------------------------------------------------------------------------------
+FOLDER="C:\\Users\\GBertoldi\\Documents\\Git\\EURAC-Ecohydro\\LapseRateCalculator/"
+>>>>>>> debe399d23dfc08a856d9600ef9a1e8d11d13b78
 
 # ============================= 
 
