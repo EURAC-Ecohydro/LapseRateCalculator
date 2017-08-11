@@ -16,7 +16,7 @@ Clone the package from https://github.com/EURAC-Ecohydro/LapseRateCalculator
 
 ```{r,echo=TRUE, eval=FALSE}
 
-install_github("devtools")
+install_packages("devtools")
 library(devtools)
 install_github("EURAC-Ecohydro/LapseRateCalculator")
 library("LapseRateCalculator")
