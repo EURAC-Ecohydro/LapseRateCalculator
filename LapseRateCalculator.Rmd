@@ -48,6 +48,8 @@ Note: Thi script work for data having column structure and format as LTER standa
 
 **OUTPUT**:
 
+Outptuts are in **K/1000 m** - negative values mean a decrease with elevation
+
 1.  **VARIABLE_FOR_LAPSERATE.csv** in folder */data/Output/* a .csv file which contains 4 columns:
     + **TIMESTAMP**: date and time of observation
     + **n_station**: the number of station available in linear fit for each timestamp
